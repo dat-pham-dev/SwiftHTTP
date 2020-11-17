@@ -319,20 +319,17 @@ extension URLRequest {
     -parameter parameters: The container (array or dictionary) to convert and append to the URL or Body
     */
     public mutating func appendParametersAsJSON(_ parameters: HTTPParameterProtocol) -> Error? {
-        if isURIParam() {
-            appendParametersAsQueryString(parameters)
-        } else {
-            do {
-                httpBody = try JSONSerialization.data(withJSONObject: parameters as AnyObject, options: JSONSerialization.WritingOptions())
-            } catch let error {
-                return error
-            }
-            var contentStr = "application/json"
-            if let charset = CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(String.Encoding.utf8.rawValue)) {
-                contentStr += "; charset=\(charset)"
-            }
-            setValue(contentStr, forHTTPHeaderField: contentTypeKey)
+        do {
+            httpBody = try JSONSerialization.data(withJSONObject: parameters as AnyObject, options: JSONSerialization.WritingOptions())
+        } catch let error {
+            return error
         }
+        var contentStr = "application/json"
+        if let charset = CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(String.Encoding.utf8.rawValue)) {
+            contentStr += "; charset=\(charset)"
+        }
+        setValue(contentStr, forHTTPHeaderField: contentTypeKey)
+        
         return nil
     }
     
